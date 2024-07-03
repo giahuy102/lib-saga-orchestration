@@ -84,4 +84,17 @@ public class SagaInstance {
     public SagaStep getFirstStep() {
         return steps.get(0);
     }
+
+    public SagaStep getStepAtOrder(int index) {
+        return steps.get(index);
+    }
+
+    public int getStepOrderIndex(String stepKey) {
+        SagaStep curStep;
+        for (int i = 0; i < steps.size(); ++i) {
+            curStep = steps.get(i);
+            if (curStep.getKey().equals(stepKey)) return i;
+        }
+        throw new RuntimeException(String.format("Saga step with key %s is not found", stepKey));
+    }
 }
