@@ -14,8 +14,8 @@ public class SagaStep implements Serializable {
     private String key;
     private byte[] payloadKey;
     private byte[] payloadValue;
-    // TODO: separate kafka topic and compensation topic
     private String kafkaTopic;
+    private String kafkaCompensationTopic;
     private SagaStepStatus status = STARTED;
 
     public SagaStep(String key, byte[] payloadKey, byte[] payloadValue, String kafkaTopic) {
@@ -23,5 +23,6 @@ public class SagaStep implements Serializable {
         this.payloadKey = payloadKey;
         this.payloadValue = payloadValue;
         this.kafkaTopic = kafkaTopic;
+        this.kafkaCompensationTopic = kafkaTopic.concat("-compensation");
     }
 }

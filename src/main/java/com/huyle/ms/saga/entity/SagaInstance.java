@@ -2,6 +2,9 @@ package com.huyle.ms.saga.entity;
 
 import com.huyle.ms.saga.constant.SagaStatus;
 import com.huyle.ms.saga.entity.converter.ListAttributeConverter;
+import com.huyle.ms.saga.exception.NoSagaStepException;
+import com.huyle.ms.saga.exception.SagaStepIndexOutOfRangeException;
+import com.huyle.ms.saga.exception.SagaStepNotFoundException;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -35,7 +38,6 @@ public class SagaInstance {
     // useful to tell apart different kinds of Sagas supported by one system
     private String type;
 
-    // TODO: Need to register successful messages + compensating messages for each step
     @Convert(converter = ListAttributeConverter.class)
     private List<SagaStep> steps = new ArrayList<>();
 
@@ -58,7 +60,7 @@ public class SagaInstance {
 
     public SagaInstance(String sagaType, List<SagaStep> sagaSteps) {
         if (sagaSteps.isEmpty()) {
-            throw new RuntimeException("Saga instance must have at lease one step");
+            throw new NoSagaStepException("Saga instance must have at lease one step");
         }
         currentStep = sagaSteps.get(0).getKey();
         status = STARTED;
@@ -85,8 +87,16 @@ public class SagaInstance {
         return steps.get(0);
     }
 
+    public int getStepsAmount() {
+        return steps.size();
+    }
+
     public SagaStep getStepAtOrder(int index) {
-        return steps.get(index);
+        try {
+            return steps.get(index);
+        } catch (IndexOutOfBoundsException e) {
+            throw new SagaStepIndexOutOfRangeException(String.format("Saga instance %s has no step at index %d", this.id, index));
+        }
     }
 
     public int getStepOrderIndex(String stepKey) {
@@ -95,6 +105,6 @@ public class SagaInstance {
             curStep = steps.get(i);
             if (curStep.getKey().equals(stepKey)) return i;
         }
-        throw new RuntimeException(String.format("Saga step with key %s is not found", stepKey));
+        throw new SagaStepNotFoundException(String.format("Saga step with key %s is not found", stepKey));
     }
 }
