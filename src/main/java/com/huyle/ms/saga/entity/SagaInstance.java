@@ -14,6 +14,7 @@ import javax.persistence.Convert;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.Id;
 import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +28,7 @@ import static com.huyle.ms.saga.constant.SagaStatus.STARTED;
 @Getter
 @Setter
 public class SagaInstance {
+    @Id
     private UUID id;
 
     @Column(name = "current_step")
@@ -41,20 +43,22 @@ public class SagaInstance {
     @Convert(converter = ListAttributeConverter.class)
     private List<SagaStep> steps = new ArrayList<>();
 
-    public StepBuilder stepBuilder() {
+    public static StepBuilder stepBuilder() {
         return new StepBuilder();
     }
 
-    public class StepBuilder {
+    public static class StepBuilder {
+        private final List<SagaStep> sagaSteps = new ArrayList<>();
+
         public StepBuilder() {}
 
         public StepBuilder step(SagaStep sagaStep) {
-            steps.add(sagaStep);
+            sagaSteps.add(sagaStep);
             return this;
         }
 
         public List<SagaStep> build() {
-            return steps;
+            return sagaSteps;
         }
     }
 
