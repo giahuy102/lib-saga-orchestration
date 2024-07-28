@@ -68,7 +68,7 @@ public class SagaProvider {
         try {
             SagaStep prevStep = sagaInstance.getStepAtOrder(stepIndex - 1);
             prevStep.setStatus(SagaStepStatus.COMPENSATING);
-            kafkaTemplate.send(prevStep.getKafkaCompensationTopic(), prevStep.getPayloadKey(), prevStep.getPayloadValue());
+            kafkaTemplate.send(prevStep.getCompensationKafkaTopic(), prevStep.getCompensationPayloadKey(), prevStep.getCompensationPayloadValue());
             return true;
         } catch (SagaStepIndexOutOfRangeException e) {
             return false;
