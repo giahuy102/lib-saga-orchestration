@@ -8,6 +8,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 @Configuration
 @ComponentScan(basePackages = "com.huyle.ms.saga")
 @EntityScan(basePackages = "com.huyle.ms.saga.entity")
-@EnableJpaRepositories(basePackages = "com.huyle.ms.repository")
+@EnableJpaRepositories(basePackages = "com.huyle.ms.saga.repository")
 public class SagaConfig {
 }

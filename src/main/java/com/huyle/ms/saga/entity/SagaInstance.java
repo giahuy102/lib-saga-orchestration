@@ -41,6 +41,7 @@ public class SagaInstance {
     private String type;
 
     @Convert(converter = ListAttributeConverter.class)
+    @Column(columnDefinition = "TEXT")
     private List<SagaStep> steps = new ArrayList<>();
 
     public static StepBuilder stepBuilder() {
@@ -62,14 +63,15 @@ public class SagaInstance {
         }
     }
 
-    public SagaInstance(String sagaType, List<SagaStep> sagaSteps) {
+    public SagaInstance(UUID instanceId, String sagaType, List<SagaStep> sagaSteps) {
         if (sagaSteps.isEmpty()) {
             throw new NoSagaStepException("Saga instance must have at lease one step");
         }
-        currentStep = sagaSteps.get(0).getKey();
-        status = STARTED;
-        type = sagaType;
-        steps = sagaSteps;
+        this.id = instanceId;
+        this.currentStep = sagaSteps.get(0).getKey();
+        this.status = STARTED;
+        this.type = sagaType;
+        this.steps = sagaSteps;
     }
 
     public SagaStep getNextStep(String stepKey) {

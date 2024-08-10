@@ -15,7 +15,7 @@ import java.util.Map;
 public class KafkaConfig {
 
     @Bean
-    ProducerFactory<byte[], byte[]> producerFactory() {
+    public ProducerFactory<byte[], byte[]> producerFactory() {
         Map<String, Object> configProps = new HashMap<>();
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class);
         configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, ByteArraySerializer.class);
@@ -23,7 +23,7 @@ public class KafkaConfig {
     }
 
     @Bean
-    KafkaTemplate<byte[], byte[]> kafkaTemplate() {
+    public KafkaTemplate<byte[], byte[]> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
     }
 }

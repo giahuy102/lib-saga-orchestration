@@ -28,12 +28,12 @@ public class SagaProvider {
     }
 
     @Transactional
-    public void initSagaInstance(String sagaType, List<SagaStep> sagaSteps) {
-        SagaInstance instance = new SagaInstance(sagaType, sagaSteps);
+    public void initSagaInstance(UUID instanceId, String sagaType, List<SagaStep> sagaSteps) {
+        SagaInstance instance = new SagaInstance(instanceId, sagaType, sagaSteps);
         SagaStep firstStep = instance.getFirstStep();
         firstStep.setStatus(SagaStepStatus.STARTED);
         sagaRepository.save(instance);
-        kafkaTemplate.send(firstStep.getKafkaTopic(), firstStep.getPayloadKey(), firstStep.getPayloadValue());
+//        kafkaTemplate.send(firstStep.getKafkaTopic(), firstStep.getPayloadKey(), firstStep.getPayloadValue());
     }
 
     @Transactional
