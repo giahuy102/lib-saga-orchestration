@@ -33,7 +33,7 @@ public class SagaProvider {
         SagaStep firstStep = instance.getFirstStep();
         firstStep.setStatus(SagaStepStatus.STARTED);
         sagaRepository.save(instance);
-//        kafkaTemplate.send(firstStep.getKafkaTopic(), firstStep.getPayloadKey(), firstStep.getPayloadValue());
+        kafkaTemplate.send(firstStep.getKafkaTopic(), firstStep.getPayloadKey(), firstStep.getPayloadValue());
     }
 
     @Transactional
