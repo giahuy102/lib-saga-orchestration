@@ -29,7 +29,7 @@ public class SagaStep implements Serializable {
         this.key = key;
         this.kafkaTopic = kafkaTopic;
         this.hasCompensation = hasCompensation;
-        this.compensationKafkaTopic = kafkaTopic.concat("-compensation");
+        this.compensationKafkaTopic = kafkaTopic.concat(".compensation");
         initPayloadSerialization(payloadKey, payloadValue, keySerializer, valueSerializer);
     }
 
