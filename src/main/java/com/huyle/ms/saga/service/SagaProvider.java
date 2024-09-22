@@ -21,7 +21,7 @@ import java.util.UUID;
 public class SagaProvider {
 
     private final SagaRepository sagaRepository;
-    private final KafkaTemplate<byte[], byte[]> kafkaTemplate;
+    private final KafkaService kafkaService;
 
     private SagaInstance findInstanceById(UUID id) {
         return sagaRepository.findById(id).orElseThrow(() -> new RuntimeException(String.format("Can't find saga instance with id %s", id)));
@@ -29,15 +29,17 @@ public class SagaProvider {
 
     @Transactional
     public void initSagaInstance(UUID instanceId, String sagaType, List<SagaStep> sagaSteps) {
+        log.info("Init saga instance ID=\"{}\"", instanceId);
         SagaInstance instance = new SagaInstance(instanceId, sagaType, sagaSteps);
         SagaStep firstStep = instance.getFirstStep();
         firstStep.setStatus(SagaStepStatus.STARTED);
         sagaRepository.save(instance);
-        kafkaTemplate.send(firstStep.getKafkaTopic(), firstStep.getPayloadKey(), firstStep.getPayloadValue());
+        kafkaService.publishSagaStepEvent(instanceId, firstStep.getPayloadKey(), firstStep.getPayloadValue(), firstStep.getKey(), firstStep.getKafkaTopic());
     }
 
     @Transactional
     public void onStepEvent(String stepKey, SagaStepStatus stepStatus, UUID instanceId) {
+        log.info("Receive event for step=\"{}\"", stepKey);
         SagaInstance instance = findInstanceById(instanceId);
         int curIdxStep = instance.getStepOrderIndex(stepKey);
         SagaStep curStep = instance.getStepAtOrder(curIdxStep);
@@ -57,7 +59,7 @@ public class SagaProvider {
         try {
             SagaStep nextStep = sagaInstance.getStepAtOrder(stepIndex + 1);
             nextStep.setStatus(SagaStepStatus.STARTED);
-            kafkaTemplate.send(nextStep.getKafkaTopic(), nextStep.getPayloadKey(), nextStep.getPayloadValue());
+            kafkaService.publishSagaStepEvent(sagaInstance.getId(), nextStep.getPayloadKey(), nextStep.getPayloadValue(), nextStep.getKey(), nextStep.getKafkaTopic());
             return true;
         } catch (SagaStepIndexOutOfRangeException e) {
             return false;
@@ -68,7 +70,7 @@ public class SagaProvider {
         try {
             SagaStep prevStep = sagaInstance.getStepAtOrder(stepIndex - 1);
             prevStep.setStatus(SagaStepStatus.COMPENSATING);
-            kafkaTemplate.send(prevStep.getCompensationKafkaTopic(), prevStep.getCompensationPayloadKey(), prevStep.getCompensationPayloadValue());
+            kafkaService.publishSagaStepEvent(sagaInstance.getId(), prevStep.getPayloadKey(), prevStep.getPayloadValue(), prevStep.getKey(), prevStep.getKafkaTopic());
             return true;
         } catch (SagaStepIndexOutOfRangeException e) {
             return false;

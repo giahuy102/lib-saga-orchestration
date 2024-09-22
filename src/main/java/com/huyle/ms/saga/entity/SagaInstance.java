@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static com.huyle.ms.saga.constant.SagaStatus.STARTED;
+import static com.huyle.ms.saga.constant.SagaStatus.IN_PROGRESS;
 
 @Entity
 @NoArgsConstructor
@@ -69,7 +69,7 @@ public class SagaInstance {
         }
         this.id = instanceId;
         this.currentStep = sagaSteps.get(0).getKey();
-        this.status = STARTED;
+        this.status = IN_PROGRESS;
         this.type = sagaType;
         this.steps = sagaSteps;
     }

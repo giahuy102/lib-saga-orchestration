@@ -8,7 +8,7 @@ import lombok.Setter;
 
 import java.io.Serializable;
 
-import static com.huyle.ms.saga.constant.SagaStepStatus.STARTED;
+import static com.huyle.ms.saga.constant.SagaStepStatus.NOT_STARTED;
 
 @Getter
 @Setter
@@ -21,7 +21,7 @@ public class SagaStep implements Serializable {
     private byte[] compensationPayloadValue = null;
     private String kafkaTopic;
     private String compensationKafkaTopic;
-    private SagaStepStatus status = STARTED;
+    private SagaStepStatus status = NOT_STARTED;
     private boolean hasCompensation;
 
     public SagaStep(String key, Object payloadKey, Object payloadValue, String kafkaTopic, boolean hasCompensation,
